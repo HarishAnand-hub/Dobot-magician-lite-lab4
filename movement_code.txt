@@ -1,0 +1,25 @@
+FOR FORWARD KINEMATICS
+when 🏁 is clicked
+    Move joints to Joint1 0 ° Joint2 0 ° Joint3 0 ° Joint4 0 ° 
+    wait 3 seconds
+    Move joints to Joint1 90 ° Joint2 20 ° Joint3 30 ° Joint4 0 ° 
+    wait 3 seconds
+    Move joints to Joint1 -2 ° Joint2 25 ° Joint3 23 ° Joint4 0 ° 
+    wait 3 seconds
+    Move joints to Joint1 31 ° Joint2 52 ° Joint3 42 ° Joint4 0 ° 
+    wait 3 seconds
+    Move joints to Joint1 27 ° Joint2 52 ° Joint3 24 ° Joint4 0 ° 
+
+
+FOR INVERSE KINEMATICS
+when space key is pressed
+    Jump to X 240 Y 0 Z 150 R 0 
+    wait 3 seconds
+    Jump to X 0 Y 272.5 Z 68.54 R 0 
+    wait 3 seconds
+    Jump to X 300 Y 50 Z 100 R 0 
+    wait 3 seconds
+    Jump to X 280 Y -195 Z 15 R 0 
+    wait 3 seconds
+    Jump to X 35 Y 270 Z -33 R 0 
+    wait 3 seconds
