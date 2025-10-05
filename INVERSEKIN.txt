@@ -1,0 +1,57 @@
+clc; clear; close all;
+syms theta1 theta2 theta3 a1 a2 a3
+
+%% Robot link lengths
+a1_v = 53.5;
+a2_v = 150;
+a3_v = 150;
+
+%% Forward Kinematics (Homogeneous Matrices)
+H01 = [cos(theta1) 0 -sin(theta1) 0;
+       sin(theta1) 0  cos(theta1) 0;
+       0          -1  0          a1;
+       0           0  0          1];
+
+H12 = [-sin(theta2) -cos(theta2) 0 90 + a2*sin(theta2);
+        cos(theta2) -sin(theta2) 0 -a2*cos(theta2);
+        0           0           1 0;
+        0           0           0 1];
+
+H23 = [cos(theta3-theta2) -sin(theta3-theta2) 0 a3*sin(theta3-theta2);
+       sin(theta3-theta2)  cos(theta3-theta2) 0 -a3*cos(theta3-theta2);
+       0                   0                  1 0;
+       0                   0                  0 1];
+
+H03 = simplify(H01*H12*H23);
+
+Px = H03(1,4);
+Py = H03(2,4);
+Pz = H03(3,4) - a1; % Adjust if your FK subtracts offset
+
+%% Desired end-effector position
+px_new = 35;
+py_new = 270;
+pz_new = -33;
+
+%% Solve IK symbolically
+[t1_sol, t2_sol, t3_sol] = solve(...
+    subs(Px, [a1 a2 a3], [a1_v a2_v a3_v]) == px_new, ...
+    subs(Py, [a1 a2 a3], [a1_v a2_v a3_v]) == py_new, ...
+    subs(Pz, [a1 a2 a3], [a1_v a2_v a3_v]) == pz_new, ...
+    [theta1 theta2 theta3], 'Real', true);
+
+%% Print only elbow-up and elbow-down solutions
+fprintf('Inverse Kinematics Solutions for (X=%.2f, Y=%.2f, Z=%.2f):\n', px_new, py_new, pz_new);
+
+if ~isempty(t1_sol)
+    % Convert symbolic to numeric
+    t1_deg = double(t1_sol*180/pi);
+    t2_deg = double(t2_sol*180/pi);
+    t3_deg = double(t3_sol*180/pi);
+
+    fprintf('Elbow Up:   Theta1 = %.2f°, Theta2 = %.2f°, Theta3 = %.2f°\n', t1_deg(1), t2_deg(1), t3_deg(1));
+    fprintf('Elbow Down: Theta1 = %.2f°, Theta2 = %.2f°, Theta3 = %.2f°\n', t1_deg(2), t2_deg(2), t3_deg(2));
+
+else
+    disp('No real solution found.');
+end

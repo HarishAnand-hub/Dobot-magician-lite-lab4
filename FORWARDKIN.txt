@@ -1,0 +1,54 @@
+%%
+
+clear all clc
+syms a1 a2 a3 t1 t2 t3  % symbolic joint variables
+
+%Global Vars
+a1_v = 53.5; 
+a2_v = 150; 
+a3_v = 150;
+
+theta1 = 90/180*pi; 
+theta2 = 20/180*pi; 
+theta3 = 30/180*pi;
+
+% Forward Kinematics
+H01 = [cos(t1) 0 -sin(t1) 0;...
+       sin(t1) 0  cos(t1) 0;...
+       0      -1   0      a1;...
+       0       0   0      1];
+
+H12 = [-sin(t2) -cos(t2) 0 90 + a2*sin(t2);...
+        cos(t2) -sin(t2) 0 -a2*cos(t2);...
+        0        0       1  0;...
+        0        0       0  1];
+
+H23 = [cos(t3 - t2) -sin(t3 - t2) 0 a3*sin(t3 - t2);...
+       sin(t3 - t2)  cos(t3 - t2) 0 -a3*cos(t3 - t2);...
+       0             0            1  0;...
+       0             0            0  1];
+
+H03 = simplify(H01 * H12 * H23);
+
+
+Px = H03(1,4);
+Py = H03(2,4);
+Pz = H03(3,4);
+
+px_new = vpa(subs(Px, [t1, t2, t3, a1, a2, a3], [theta1, theta2, theta3, a1_v, a2_v, a3_v]))
+py_new = vpa(subs(Py, [t1, t2, t3, a1, a2, a3], [theta1, theta2, theta3, a1_v, a2_v, a3_v]))
+pz_new = vpa(subs(Pz, [t1, t2, t3, a1, a2, a3], [theta1, theta2, theta3, a1_v, a2_v, a3_v])) - 53.5
+
+
+
+%Computing IK Solution
+
+[t1,t2,t3] = solve(Px==px_new,Py==py_new,Pz==pz_new,theta1,theta2,theta3);
+
+Theta1=vpa((theta1)*180/pi)
+
+Theta2=vpa((theta2)*180/pi)
+
+Theta3=vpa((theta3)*180/pi)
+
+Solution=[Theta1 Theta2 Theta3];
